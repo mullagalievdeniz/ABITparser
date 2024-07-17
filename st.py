@@ -1,12 +1,25 @@
+# -*- coding: utf-8 -*-
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
+from pyvirtualdisplay import Display
+from selenium.webdriver.chrome.options import Options
+
 
 
 def parser()-> str:
+    display = Display(visible=0, size=(1920, 1080))
+    display.start()
+
+    chrome_options = Options()
+    chrome_options.add_argument("--no-sandbox")
+    chrome_options.add_argument("--disable-dev-shm-usage")
+    chrome_options.add_argument("--disable-gpu")
+    chrome_options.add_argument("--window-size=1920x1080")
+
     result = ''
-    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+    driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=chrome_options)
     search_text = "160-798-193-99"
     itmo_number = '16079819399'
 
@@ -51,6 +64,9 @@ def parser()-> str:
         element = driver.find_element(By.XPATH, f"//span[contains(text(), '{itmo_number}')]")
         number = element.find_element(By.XPATH, ".//ancestor::div[contains(@class, 'RatingPage_table__item__qMY0F')]//p[contains(@class, 'RatingPage_table__position__uYWvi')]")
         result += f'\n{itmo_insts[ls]}: {number.text.split()[0]}'
+
+    driver.quit()
+    display.stop()
 
 
     return result
